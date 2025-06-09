@@ -1,0 +1,60 @@
+{
+  "name": "hue-mcp",
+  "version": "0.5.0",
+  "description": "Model Context Protocol server for Philips Hue smart lighting control",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "setup": "tsx src/setup-cli.ts",
+    "setup:web": "concurrently \"npm run setup:web:server\" \"npm run setup:web:client\"",
+    "setup:web:server": "tsx src/setup-server.ts",
+    "setup:web:client": "cd setup-wizard && npm run dev",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:connection": "tsx scripts/test-connection.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\" \"setup-wizard/src/**/*.{ts,tsx}\"",
+    "clean": "rm -rf dist",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "philips-hue",
+    "smart-home",
+    "iot",
+    "lighting"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "node-hue-api": "^4.0.11",
+    "winston": "^3.11.0",
+    "zod": "^3.22.4",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "open": "^9.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0",
+    "@vitest/ui": "^1.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
