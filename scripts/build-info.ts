@@ -65,15 +65,24 @@ function main() {
   
   const buildInfo = generateBuildInfo();
   
-  // Create output directory
-  const outputDir = join(projectRoot, 'src', 'generated');
-  mkdirSync(outputDir, { recursive: true });
+  // Create output directories
+  const srcOutputDir = join(projectRoot, 'src', 'generated');
+  const distOutputDir = join(projectRoot, 'dist', 'generated');
   
-  // Write build info
-  const outputPath = join(outputDir, 'build-info.json');
-  writeFileSync(outputPath, JSON.stringify(buildInfo, null, 2));
+  mkdirSync(srcOutputDir, { recursive: true });
+  mkdirSync(distOutputDir, { recursive: true });
   
-  console.log('✅ Build info generated:', outputPath);
+  // Write build info to both src and dist
+  const buildInfoJson = JSON.stringify(buildInfo, null, 2);
+  const srcOutputPath = join(srcOutputDir, 'build-info.json');
+  const distOutputPath = join(distOutputDir, 'build-info.json');
+  
+  writeFileSync(srcOutputPath, buildInfoJson);
+  writeFileSync(distOutputPath, buildInfoJson);
+  
+  console.log('✅ Build info generated:');
+  console.log('  Source:', srcOutputPath);
+  console.log('  Dist:', distOutputPath);
   console.log(JSON.stringify(buildInfo, null, 2));
 }
 
