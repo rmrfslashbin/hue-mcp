@@ -4,7 +4,7 @@ This document provides detailed documentation for all MCP tools provided by the 
 
 ## Overview
 
-The Hue MCP Server provides **13 enhanced tools** that enable AI assistants to control Philips Hue lighting systems with intelligence and context. Each tool is optimized for AI interaction with rich data, smart suggestions, and quick actions.
+The Hue MCP Server provides **14 enhanced tools** that enable AI assistants to control Philips Hue lighting systems with intelligence and context. Each tool is optimized for AI interaction with rich data, smart suggestions, and quick actions.
 
 ## 🆕 Enhanced Features (v2.0)
 
@@ -497,6 +497,109 @@ Assistant: Uses activate_scene with the relax scene's ID
 ```
 
 ## System Information Tools
+
+### `get_info` 🆕
+
+**Description**: Get system information, version details, and debugging metadata
+
+**Parameters**:
+- `detail` (string, optional): Level of detail to include (`minimal`, `standard`, `verbose`) - default: `standard`
+
+**Enhanced Features**:
+- **🔧 System Diagnostics** - Version, build, git information
+- **📊 Runtime Status** - Bridge connection, cache size, uptime
+- **🔗 Resource Links** - Documentation, troubleshooting, GitHub links
+- **⚙️ Debug Information** - Memory usage, tool count, environment info
+
+**Example Usage**:
+```
+User: "What version of the Hue server is running?"
+Assistant: Uses get_info to show version and system information
+```
+
+**Detail Levels**:
+
+**Minimal** - Essential info only:
+```json
+{
+  "name": "hue-mcp",
+  "version": "0.5.0",
+  "git": {
+    "commit": "5d0010e",
+    "tag": "v0.5.0"
+  },
+  "status": {
+    "bridgeConnected": true,
+    "bridgeIp": "192.168.1.100"
+  }
+}
+```
+
+**Standard** - Balanced information (default):
+```json
+{
+  "name": "hue-mcp",
+  "version": {
+    "package": "0.5.0",
+    "server": "0.5.0",
+    "setupWizard": "0.5.0"
+  },
+  "build": {
+    "timestamp": "2025-06-09T17:53:23.644Z",
+    "node": "v24.1.0",
+    "environment": "production"
+  },
+  "git": {
+    "commit": "5d0010e",
+    "branch": "feature/system-info-tool"
+  },
+  "repository": {
+    "url": "https://github.com/rmrfslashbin/hue-mcp",
+    "documentation": "https://github.com/rmrfslashbin/hue-mcp/tree/main/docs",
+    "issues": "https://github.com/rmrfslashbin/hue-mcp/issues",
+    "releases": "https://github.com/rmrfslashbin/hue-mcp/releases"
+  },
+  "status": {
+    "bridgeConnected": true,
+    "bridgeIp": "192.168.1.100",
+    "toolCount": 14
+  }
+}
+```
+
+**Verbose** - Full diagnostic information:
+```json
+{
+  "runtime": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "nodeVersion": "v24.1.0",
+    "uptime": 145.2,
+    "memoryUsage": {
+      "rss": 104300544,
+      "heapTotal": 17629184,
+      "heapUsed": 9520352
+    }
+  },
+  "resources": {
+    "documentation": [
+      "https://github.com/rmrfslashbin/hue-mcp/blob/main/README.md",
+      "https://github.com/rmrfslashbin/hue-mcp/blob/main/docs/installation.md"
+    ],
+    "troubleshooting": "https://github.com/rmrfslashbin/hue-mcp/blob/main/docs/troubleshooting.md"
+  },
+  "tools": {
+    "available": [
+      "find_lights", "list_lights", "get_light", "set_light_state",
+      "list_rooms", "get_room", "control_room_lights",
+      "list_zones", "get_zone", "control_zone_lights",
+      "list_scenes", "activate_scene",
+      "get_summary", "get_info"
+    ],
+    "count": 14
+  }
+}
+```
 
 ### `get_summary`
 

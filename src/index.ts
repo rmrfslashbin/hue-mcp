@@ -38,6 +38,10 @@ import {
   createSummaryTool, 
   handleGetSummary 
 } from './tools/summary.js';
+import {
+  createInfoTool,
+  handleGetInfo
+} from './tools/info.js';
 
 class HueMCPServer {
   private server: Server;
@@ -71,6 +75,7 @@ class HueMCPServer {
         ...createRoomTools(this.client),
         ...createSceneTools(this.client),
         createSummaryTool(this.client),
+        createInfoTool(this.client),
       ];
 
       return { tools };
@@ -132,6 +137,9 @@ class HueMCPServer {
           // Summary tool
           case 'get_summary':
             result = await handleGetSummary(this.client, args);
+            break;
+          case 'get_info':
+            result = await handleGetInfo(this.client, args);
             break;
 
           default:
