@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Wifi, CheckCircle, Copy, Download, ExternalLink } from 'lucide-react';
+import { Search, Wifi, CheckCircle, Copy, Download } from 'lucide-react';
 
 interface Bridge {
   id: string;
@@ -324,7 +324,7 @@ function DiscoveryStep({ bridges, selectedBridge, isLoading, error, onSelectBrid
   );
 }
 
-function AuthenticationStep({ bridge, progress, message, error }: any) {
+function AuthenticationStep({ progress, message, error }: any) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
