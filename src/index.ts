@@ -51,7 +51,7 @@ class HueMCPServer {
     this.server = new Server(
       {
         name: 'hue-mcp',
-        version: '0.5.0',
+        version: '0.6.0',
         description: 'Model Context Protocol server for Philips Hue smart lighting control',
       },
       {
@@ -170,7 +170,7 @@ class HueMCPServer {
   }
 
   async initialize() {
-    log.mcp('initializing', { version: '0.5.0' });
+    log.mcp('initializing', { version: '0.6.0' });
     const config = loadConfig();
     
     if (!isConfigValid(config)) {
