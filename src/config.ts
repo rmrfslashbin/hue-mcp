@@ -14,6 +14,9 @@ const ConfigSchema = z.object({
   HUE_ENABLE_EVENTS: z.coerce.boolean().default(false),
   NODE_TLS_REJECT_UNAUTHORIZED: z.string().default('0'),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+  MCP_TRANSPORT: z.enum(['stdio', 'http']).default('stdio'),
+  MCP_HOST: z.string().default('0.0.0.0'),
+  MCP_PORT: z.coerce.number().default(8080),
 });
 
 export function loadConfig(): HueConfig | null {
@@ -26,6 +29,9 @@ export function loadConfig(): HueConfig | null {
       HUE_ENABLE_EVENTS: process.env.HUE_ENABLE_EVENTS,
       NODE_TLS_REJECT_UNAUTHORIZED: process.env.NODE_TLS_REJECT_UNAUTHORIZED,
       LOG_LEVEL: process.env.LOG_LEVEL,
+      MCP_TRANSPORT: process.env.MCP_TRANSPORT,
+      MCP_HOST: process.env.MCP_HOST,
+      MCP_PORT: process.env.MCP_PORT,
     };
 
     // Remove undefined values

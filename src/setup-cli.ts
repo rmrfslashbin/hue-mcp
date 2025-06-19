@@ -94,7 +94,13 @@ async function setupCLI() {
         
         // Step 5: Test connection
         console.log('\\n🧪 Testing connection...');
-        const client = new HueClient(config);
+        const fullConfig = {
+          ...config,
+          MCP_TRANSPORT: 'stdio' as const,
+          MCP_HOST: '0.0.0.0',
+          MCP_PORT: 8080,
+        };
+        const client = new HueClient(fullConfig);
         await client.connect();
         const summary = await client.getSystemSummary();
         

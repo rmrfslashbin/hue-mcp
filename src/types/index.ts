@@ -5,6 +5,9 @@ export interface HueConfig {
   HUE_ENABLE_EVENTS: boolean;
   NODE_TLS_REJECT_UNAUTHORIZED: string;
   LOG_LEVEL: string;
+  MCP_TRANSPORT: 'stdio' | 'http';
+  MCP_HOST: string;
+  MCP_PORT: number;
 }
 
 export interface LightState {

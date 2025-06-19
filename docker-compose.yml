@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  hue-mcp:
+    build: .
+    labels:
+      mcp.enabled: "true"
+      mcp.name: "Philips Hue"
+      mcp.type: "http"
+      mcp.port: "8080"
+      mcp.description: "Control Philips Hue smart lights, rooms, zones, and scenes"
+      mcp.version: "0.6.0"
+    ports:
+      - "8081:8080"  # External:Internal port mapping
+    environment:
+      - MCP_TRANSPORT=http
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8080
+      - HUE_BRIDGE_IP=${HUE_BRIDGE_IP}
+      - HUE_API_KEY=${HUE_API_KEY}
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - LOG_LEVEL=info
+    networks:
+      - cantrip-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  cantrip-network:
+    external: true
