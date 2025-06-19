@@ -10,7 +10,10 @@ const __dirname = dirname(__filename);
 
 // Package information
 const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf-8'));
-const setupWizardPackageJson = JSON.parse(readFileSync(join(__dirname, '../../setup-wizard/package.json'), 'utf-8'));
+const setupWizardPackagePath = join(__dirname, '../../setup-wizard/package.json');
+const setupWizardPackageJson = existsSync(setupWizardPackagePath) 
+  ? JSON.parse(readFileSync(setupWizardPackagePath, 'utf-8'))
+  : null;
 
 // Repository information
 const REPO_URL = 'https://github.com/rmrfslashbin/hue-mcp';
@@ -159,7 +162,7 @@ export async function handleGetInfo(client: HueClient, args: any = {}): Promise<
       version: {
         package: packageJson.version,
         server: packageJson.version,
-        setupWizard: setupWizardPackageJson.version,
+        setupWizard: setupWizardPackageJson?.version || 'not available',
       },
       build: {
         timestamp: buildInfo.timestamp,
