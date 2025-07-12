@@ -9,7 +9,6 @@ import {
 
 import { loadConfig, isConfigValid } from './config.js';
 import { HueClient } from './hue-client.js';
-import { launchSetupWizard } from './setup-server.js';
 import { log } from './utils/logger.js';
 
 // Tool handlers
@@ -42,6 +41,15 @@ import {
   createInfoTool,
   handleGetInfo
 } from './tools/info.js';
+import {
+  createConfigTool,
+  handleGetBridgeConfig
+} from './tools/config.js';
+import {
+  createUserTools,
+  handleListUsers,
+  handleGetUser
+} from './tools/users.js';
 
 class HueMCPServer {
   private server: Server;
@@ -76,6 +84,8 @@ class HueMCPServer {
         ...createSceneTools(this.client),
         createSummaryTool(this.client),
         createInfoTool(this.client),
+        createConfigTool(this.client),
+        ...createUserTools(this.client),
       ];
 
       return { tools };
@@ -142,6 +152,19 @@ class HueMCPServer {
             result = await handleGetInfo(this.client, args);
             break;
 
+          // Bridge configuration tool
+          case 'get_bridge_config':
+            result = await handleGetBridgeConfig(this.client, args);
+            break;
+
+          // User management tools
+          case 'list_users':
+            result = await handleListUsers(this.client, args);
+            break;
+          case 'get_user':
+            result = await handleGetUser(this.client, args);
+            break;
+
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -175,10 +198,9 @@ class HueMCPServer {
     
     if (!isConfigValid(config)) {
       log.error('Hue MCP Server configuration missing or invalid');
-      log.info('Launching setup wizard');
-      
-      await launchSetupWizard();
-      process.exit(0);
+      log.info('Please run setup wizard: npm run setup:web');
+      log.error('Cannot start MCP server without valid configuration');
+      process.exit(1);
     }
 
     try {

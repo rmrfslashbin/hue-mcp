@@ -172,6 +172,18 @@ The server provides these AI-optimized tools:
 | `set_light_state` | Control with natural language | "Turn on the desk lamp to warm white" |
 | `get_summary` | System overview with insights | "Give me a lighting summary" |
 
+### 🔧 Bridge & System Management
+| Tool | Description | Example |
+|------|-------------|---------|
+| `get_bridge_config` | Bridge configuration and system info | "Show me bridge settings" |
+| `get_info` | Server version and system information | "What version am I running?" |
+
+### 👥 User Management
+| Tool | Description | Example |
+|------|-------------|---------|
+| `list_users` | List all whitelisted users | "Who has access to the bridge?" |
+| `get_user` | Detailed user information | "Show me details for user abc123" |
+
 ### ✨ Enhanced Features
 
 All tools now include:
@@ -355,6 +367,16 @@ npm run dev
 - **No data collection** - All lighting data stays local
 - **Secure authentication** - API keys stored locally
 - **HTTPS communication** with Hue bridge
+
+### 🛡️ User Management Security
+
+The server includes user management tools with built-in safety protections:
+
+- **👀 Read-only access** - User tools provide visibility into bridge access without modification
+- **📝 Audit trail** - All user operations are logged with metadata  
+- **🔒 Local network only** - All user data stays on your local network
+
+**Note:** User deletion is not supported as Philips Hue deprecated this feature in their local API. To remove users, use the official [Philips Hue Account Management](https://account.meethue.com/apps) web interface.
 
 ## 📝 License
 

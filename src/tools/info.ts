@@ -121,7 +121,7 @@ export async function handleGetInfo(client: HueClient, args: any = {}): Promise<
     // Get bridge status
     let bridgeStatus: any = {
       bridgeConnected: false,
-      toolCount: 13,
+      toolCount: 16,
     };
     
     try {
@@ -130,7 +130,7 @@ export async function handleGetInfo(client: HueClient, args: any = {}): Promise<
         bridgeConnected: summary.bridge.connected,
         bridgeIp: summary.bridge.ip,
         lastSync: summary.bridge.lastSync,
-        toolCount: 13,
+        toolCount: 16,
         cacheSize: summary.statistics.totalLights + summary.statistics.rooms + 
                    summary.statistics.zones + summary.statistics.scenes,
       };
@@ -229,8 +229,9 @@ export async function handleGetInfo(client: HueClient, args: any = {}): Promise<
           'list_zones', 'get_zone', 'control_zone_lights',
           'list_scenes', 'activate_scene',
           'get_summary', 'get_info',
+          'get_bridge_config', 'list_users', 'get_user',
         ],
-        count: 14, // Now 14 with get_info
+        count: 17, // Now 17 with get_info, get_bridge_config, list_users, get_user
       } as any,
     };
     

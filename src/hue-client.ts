@@ -511,4 +511,106 @@ export class HueClient {
 
     return state;
   }
+
+  // Bridge configuration methods
+  async getBridgeConfiguration(includeUsers: boolean = false): Promise<any> {
+    if (!this.api) throw new Error('Not connected to bridge');
+    
+    try {
+      // Temporarily capture and redirect console output to prevent STDOUT pollution
+      const originalStdoutWrite = process.stdout.write;
+      const originalConsoleLog = console.log;
+      const originalConsoleWarn = console.warn;
+      
+      // Redirect all output to stderr during this API call
+      process.stdout.write = process.stderr.write.bind(process.stderr);
+      console.log = (...args: any[]) => console.error(...args);
+      console.warn = (...args: any[]) => console.error(...args);
+      
+      try {
+        if (includeUsers) {
+          // Get complete configuration including users
+          const fullConfig = await this.api.configuration.getAll();
+          return fullConfig;
+        } else {
+          // Get basic configuration without users
+          const config = await this.api.configuration.get();
+          return config;
+        }
+      } finally {
+        // Restore original console methods
+        process.stdout.write = originalStdoutWrite;
+        console.log = originalConsoleLog;
+        console.warn = originalConsoleWarn;
+      }
+    } catch (error) {
+      log.error('Failed to get bridge configuration', error);
+      throw error;
+    }
+  }
+
+  // User management methods
+  async getBridgeUsers(): Promise<any> {
+    if (!this.api) throw new Error('Not connected to bridge');
+    
+    try {
+      // Temporarily capture and redirect console output to prevent STDOUT pollution
+      const originalStdoutWrite = process.stdout.write;
+      const originalConsoleLog = console.log;
+      const originalConsoleWarn = console.warn;
+      
+      // Redirect all output to stderr during this API call
+      process.stdout.write = process.stderr.write.bind(process.stderr);
+      console.log = (...args: any[]) => console.error(...args);
+      console.warn = (...args: any[]) => console.error(...args);
+      
+      try {
+        const users = await this.api.users.getAll();
+        return users;
+      } finally {
+        // Restore original console methods
+        process.stdout.write = originalStdoutWrite;
+        console.log = originalConsoleLog;
+        console.warn = originalConsoleWarn;
+      }
+    } catch (error) {
+      log.error('Failed to get bridge users', error);
+      throw error;
+    }
+  }
+
+  async getBridgeUser(username: string): Promise<any> {
+    if (!this.api) throw new Error('Not connected to bridge');
+    
+    try {
+      // Temporarily capture and redirect console output to prevent STDOUT pollution
+      const originalStdoutWrite = process.stdout.write;
+      const originalConsoleLog = console.log;
+      const originalConsoleWarn = console.warn;
+      
+      // Redirect all output to stderr during this API call
+      process.stdout.write = process.stderr.write.bind(process.stderr);
+      console.log = (...args: any[]) => console.error(...args);
+      console.warn = (...args: any[]) => console.error(...args);
+      
+      try {
+        const user = await this.api.users.get(username);
+        return user;
+      } finally {
+        // Restore original console methods
+        process.stdout.write = originalStdoutWrite;
+        console.log = originalConsoleLog;
+        console.warn = originalConsoleWarn;
+      }
+    } catch (error) {
+      log.error('Failed to get bridge user', error, { username });
+      throw error;
+    }
+  }
+
+
+  // Helper method to get current API username
+  getCurrentUsername(): string {
+    return this.config.HUE_API_KEY;
+  }
 }
