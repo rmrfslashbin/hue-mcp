@@ -11,7 +11,7 @@
     "start": "node dist/index.js",
     "setup": "tsx src/setup-cli.ts",
     "setup:web": "concurrently \"npm run setup:web:server\" \"npm run setup:web:client\"",
-    "setup:web:server": "tsx src/setup-server.ts",
+    "setup:web:server": "NODE_TLS_REJECT_UNAUTHORIZED=0 tsx src/setup-server.ts",
     "setup:web:client": "cd setup-wizard && npm run dev",
     "test": "vitest",
     "test:ui": "vitest --ui",

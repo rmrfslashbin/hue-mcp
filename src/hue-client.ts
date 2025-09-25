@@ -6,8 +6,7 @@ import { HueConfig, LightState } from './types/index.js';
 import { parseColorDescription, parseColorTemp, hsvToRgb, rgbToXy } from './utils/colors.js';
 import { log } from './utils/logger.js';
 
-const { api: hueApiLib, lightStates } = hueApi.v3;
-const { discovery } = hueApi;
+const { api: hueApiLib, lightStates, discovery } = hueApi.v3;
 
 export class HueClient {
   private api: any | null = null;
