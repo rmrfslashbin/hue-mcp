@@ -26,39 +26,51 @@ build: clean ## Build for production
 	@echo "📂 Distribution files are in: ./dist/"
 	@echo "   Main entry point: ./dist/index.js"
 	@echo ""
-	@echo "🚀 To install globally:"
-	@echo "   sudo cp -r ./dist/* /usr/local/lib/hue-mcp/"
-	@echo "   sudo ln -sf /usr/local/lib/hue-mcp/index.js /usr/local/bin/hue-mcp"
+	@echo "🚀 To install globally (recommended):"
+	@echo "   sudo ln -sf $(PWD)/dist/index.js /usr/local/bin/hue-mcp"
 	@echo ""
-	@echo "📋 Or copy to your preferred location:"
-	@echo "   cp -r ./dist /path/to/your/bin/hue-mcp"
+	@echo "📋 Or copy entire project:"
+	@echo "   sudo cp -r $(PWD) /usr/local/lib/hue-mcp"
+	@echo "   sudo ln -sf /usr/local/lib/hue-mcp/dist/index.js /usr/local/bin/hue-mcp"
 	@echo ""
 
-dist: build ## Build and prepare distribution package
-	@echo "📦 Preparing distribution package..."
+dist: build ## Create distribution and installation instructions
+	@echo "📦 Creating distribution..."
+	@echo ""
+	@echo "✅ Distribution ready!"
+	@echo ""
+	@echo "🚀 Recommended installation (symlink to built project):"
+	@echo "   sudo ln -sf $(PWD)/dist/index.js /usr/local/bin/hue-mcp"
+	@echo ""
+	@echo "📦 Alternative - standalone package:"
+	@echo "   make package"
+	@echo ""
+	@echo "📋 Manual installation:"
+	@echo "   1. Copy project: sudo cp -r $(PWD) /usr/local/lib/hue-mcp"
+	@echo "   2. Install deps: cd /usr/local/lib/hue-mcp && sudo $(PNPM) install --prod"
+	@echo "   3. Link binary: sudo ln -sf /usr/local/lib/hue-mcp/dist/index.js /usr/local/bin/hue-mcp"
+
+package: build ## Create standalone distributable package
+	@echo "📦 Creating standalone package with dependencies..."
+	@rm -rf dist-package
 	@mkdir -p dist-package
 	@cp -r dist/* dist-package/
 	@cp package.json dist-package/
 	@cp README.md dist-package/
 	@cp LICENSE dist-package/
+	@cp pnpm-lock.yaml dist-package/ 2>/dev/null || true
 	@echo "#!/usr/bin/env node" > dist-package/hue-mcp
 	@echo "import './index.js';" >> dist-package/hue-mcp
 	@chmod +x dist-package/hue-mcp
-	@echo ""
-	@echo "✅ Distribution package ready!"
-	@echo ""
-	@echo "📂 Package contents: ./dist-package/"
-	@echo "🚀 To install:"
-	@echo "   sudo cp -r ./dist-package /usr/local/lib/hue-mcp"
-	@echo "   sudo ln -sf /usr/local/lib/hue-mcp/hue-mcp /usr/local/bin/hue-mcp"
-
-package: dist ## Create distributable tarball
+	@echo "📦 Installing production dependencies..."
+	@cd dist-package && $(PNPM) install --prod --frozen-lockfile
 	@echo "📦 Creating tarball..."
 	@tar -czf hue-mcp-dist.tar.gz -C dist-package .
 	@echo ""
-	@echo "✅ Tarball created: hue-mcp-dist.tar.gz"
+	@echo "✅ Standalone package created!"
 	@echo ""
-	@echo "🚀 To install from tarball:"
+	@echo "📦 Package: hue-mcp-dist.tar.gz"
+	@echo "🚀 To install:"
 	@echo "   sudo mkdir -p /usr/local/lib/hue-mcp"
 	@echo "   sudo tar -xzf hue-mcp-dist.tar.gz -C /usr/local/lib/hue-mcp"
 	@echo "   sudo ln -sf /usr/local/lib/hue-mcp/hue-mcp /usr/local/bin/hue-mcp"
