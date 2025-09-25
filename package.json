@@ -18,6 +18,7 @@
   "scripts": {
     "prebuild": "tsx scripts/build-info.ts",
     "build": "tsc",
+    "postbuild": "echo '\n✅ Build complete! Distribution files are in ./dist/\n📂 Main entry: ./dist/index.js\n🚀 Run \"make dist\" to create installable package\n'",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "setup": "tsx src/setup-cli.ts",

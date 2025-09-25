@@ -181,6 +181,10 @@ auth-tokens/
 bridge-discovery-cache.json
 .hue-session/
 
+# Build and distribution artifacts
+dist-package/
+hue-mcp-dist.tar.gz
+
 # Setup wizard build files
 setup-wizard/dist/
 setup-wizard/node_modules/
