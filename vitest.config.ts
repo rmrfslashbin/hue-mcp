@@ -5,5 +5,22 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     include: ['tests/**/*.test.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      exclude: [
+        'node_modules/',
+        'dist/',
+        '**/*.test.ts',
+        '**/*.config.ts',
+        'scripts/',
+        'setup-wizard/',
+      ],
+    },
+  },
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
   },
 });

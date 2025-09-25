@@ -447,15 +447,15 @@ export class HueClient {
       };
 
       if (sceneLower.includes('relax') || sceneLower.includes('calm')) {
-        categorized.relaxing.push(sceneInfo);
+        categorized.relaxing?.push(sceneInfo);
       } else if (sceneLower.includes('energize') || sceneLower.includes('bright')) {
-        categorized.energizing.push(sceneInfo);
+        categorized.energizing?.push(sceneInfo);
       } else if (sceneLower.includes('focus') || sceneLower.includes('concentrate')) {
-        categorized.focus.push(sceneInfo);
+        categorized.focus?.push(sceneInfo);
       } else if (sceneLower.includes('living') || sceneLower.includes('natural')) {
-        categorized.living.push(sceneInfo);
+        categorized.living?.push(sceneInfo);
       } else {
-        categorized.custom.push(sceneInfo);
+        categorized.custom?.push(sceneInfo);
       }
     });
 
@@ -478,7 +478,7 @@ export class HueClient {
     // Check for brightness
     const brightnessMatch = lower.match(/(\d+)%|brightness\s+(\d+)/);
     if (brightnessMatch) {
-      state.brightness = parseInt(brightnessMatch[1] || brightnessMatch[2]);
+      state.brightness = parseInt(brightnessMatch[1] || brightnessMatch[2] || '0');
     } else if (lower.includes('dim')) {
       state.brightness = 30;
     } else if (lower.includes('bright')) {
