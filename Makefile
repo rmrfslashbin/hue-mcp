@@ -42,7 +42,7 @@ dist: build ## Build and prepare distribution package
 	@cp README.md dist-package/
 	@cp LICENSE dist-package/
 	@echo "#!/usr/bin/env node" > dist-package/hue-mcp
-	@echo "require('./index.js');" >> dist-package/hue-mcp
+	@echo "import './index.js';" >> dist-package/hue-mcp
 	@chmod +x dist-package/hue-mcp
 	@echo ""
 	@echo "✅ Distribution package ready!"
