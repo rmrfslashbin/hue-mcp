@@ -1,11 +1,11 @@
-import express from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import { writeFileSync } from 'fs';
 import { HueClient } from './hue-client.js';
 import { log } from './utils/logger.js';
 import open from 'open';
 
-const app = express();
+const app: Express = express();
 const PORT = 3002;
 
 app.use(cors());
