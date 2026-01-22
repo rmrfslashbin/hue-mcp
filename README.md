@@ -1,396 +1,261 @@
-# 🌈 Hue MCP Server
+# Hue MCP Server
 
-> A modern Model Context Protocol (MCP) server that enables AI assistants to control Philips Hue smart lighting systems with natural language.
+A Model Context Protocol (MCP) server for controlling Philips Hue lighting systems through AI assistants like Claude.
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## Features
 
-## ✨ Features
+- **Multi-Bridge Support**: Control multiple Hue bridges simultaneously
+- **Real-Time Sync**: SSE-based synchronization keeps state updated in real-time
+- **Cached Responses**: Instant responses through intelligent caching layer
+- **Comprehensive Tools**: Control lights, rooms, scenes, and bridges
+- **Smart Prompts**: AI-assisted lighting suggestions and scene creation
+- **Resources**: Access bridge status and device inventory
 
-- 🎨 **Natural Language Control** - "Turn the living room lights to stormy dusk"
-- 🔍 **Smart Light Search** - "Find all color bulbs in the bedroom" 
-- 🏠 **Smart Room & Zone Management** - Control entire rooms and zones with single commands
-- 🌟 **Atmospheric Variation** - Individual light variations for realistic scenes
-- 🎭 **Scene Activation** - Browse and activate predefined lighting scenes
-- 🧠 **AI-Optimized Tools** - Enhanced responses with quick actions and suggestions  
-- 💬 **Chatbot UX Optimized** - Smart response sizing and context management
-- ⚡ **Intelligent Caching** - 95% reduction in API calls with graceful fallbacks
-- 🔧 **Modern Setup Wizard** - Beautiful React-based configuration experience
-- 🔒 **Secure & Local** - All communication stays on your local network
-- 🛠️ **Developer Friendly** - TypeScript-first with comprehensive testing
+## Architecture
 
-## 🚀 Quick Start
+```
+Claude Desktop / AI Client
+    ↓ (MCP Protocol)
+MCP Server (hue-mcp)
+    ↓
+Cache Layer (hue-cache)
+    ↓
+Base SDK (hue-sdk)
+    ↓
+Hue Bridge Pro(s)
+```
+
+## Installation
 
 ### Prerequisites
 
-- Node.js 18+ 
-- Philips Hue Bridge (v2) on your local network
-- Claude Desktop or compatible MCP client
+- Go 1.25.6 or later
+- Philips Hue Bridge Pro with API access
+- Bridge IP address and application key
 
-### 1. Installation
+### Building
 
 ```bash
-git clone https://github.com/your-username/hue-mcp.git
-cd hue-mcp
-npm install
+cd /tmp/hue-mcp
+go build -o hue-mcp main.go
 ```
 
-### 2. Setup Your Hue Bridge
+## Configuration
 
-**Option A: Web Setup (Recommended)**
-```bash
-npm run setup:web
+The server looks for configuration in `~/.config/hue-mcp/config.json` (or `$XDG_CONFIG_HOME/hue-mcp/config.json`).
+
+### Configuration File Structure
+
+```json
+{
+  "bridges": [
+    {
+      "id": "bridge-1",
+      "name": "Main Bridge",
+      "ip": "192.168.1.100",
+      "app_key": "your-app-key-here",
+      "enabled": true
+    }
+  ],
+  "cache": {
+    "type": "file",
+    "file_path": "~/.cache/hue-mcp/bridges",
+    "auto_save_interval": 30,
+    "warm_on_startup": true
+  },
+  "server": {
+    "log_level": "info"
+  }
+}
 ```
-This launches a beautiful setup wizard at `http://localhost:3000` that will:
-- Auto-discover your Hue bridge
-- Guide you through authentication 
-- Test your connection
-- Generate Claude Desktop configuration
 
-**Option B: CLI Setup**
-```bash
-npm run setup
+### Getting Your Application Key
+
+If you don't have an application key, you can generate one using the Hue SDK:
+
+```go
+// TODO: Add setup wizard tool or link to hue-sdk documentation
 ```
 
-### 3. Add to Claude Desktop
+## Claude Desktop Integration
 
-Copy the generated configuration to your Claude Desktop config file:
-
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+Add the following to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
 
 ```json
 {
   "mcpServers": {
-    "hue-lights": {
-      "command": "node",
-      "args": ["/path/to/hue-mcp/dist/index.js"],
-      "env": {
-        "HUE_BRIDGE_IP": "192.168.1.100",
-        "HUE_API_KEY": "your-api-key-here"
-      }
+    "hue": {
+      "command": "/tmp/hue-mcp/hue-mcp",
+      "args": []
     }
   }
 }
 ```
 
-### 4. Start Using
+Restart Claude Desktop to load the MCP server.
 
-Restart Claude Desktop and try these commands:
+## Available Tools
 
-- "Turn on the living room lights"
-- "Set bedroom to warm white at 30%"
-- "Activate the energize scene"
-- "Show me all available lights"
-- "Turn everything off"
+### Setup & Discovery
+- `discover_bridges` - Find Hue bridges on your network (N-UPnP via discovery.meethue.com)
+- `authenticate_bridge` - Authenticate with bridge (link button press required)
+- `add_bridge` - Add authenticated bridge to configuration
+- `remove_bridge` - Remove bridge from configuration
+- `get_config_path` - Get configuration file location
 
-## 📚 Documentation
+### Bridge Management
+- `list_bridges` - List all configured Hue bridges
+- `get_bridge_info` - Get detailed bridge information
 
-- **[Installation Guide](docs/installation.md)** - Detailed setup instructions
-- **[MCP Tools Reference](docs/mcp-tools.md)** - Complete tool documentation
-- **[Natural Language Examples](docs/examples.md)** - Command examples and patterns
-- **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
-- **[Development Guide](docs/development.md)** - Contributing and extending
-- **[API Reference](docs/api-reference.md)** - Technical API documentation
+### Light Control
+- `list_lights` - List all lights across bridges
+- `get_light` - Get detailed light information
+- `control_light` - Comprehensive single light control:
+  - On/off, brightness (0-100%)
+  - RGB colors via XY coordinates
+  - Color temperature (white spectrum, 153-500 mirek)
+  - Effects (candle, fire, prism, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant)
+  - Timed effects (sunrise, sunset with duration)
+  - Alert effects (breathe)
+  - Gradient support for lightstrips
+- `control_lights` - Control multiple lights in one call:
+  - Each light can have unique color, brightness, and effects
+  - Perfect for: "set room to rainbow" or "varying shades of blue"
 
-## 💡 Optimal Usage Patterns
+### Room Management
+- `list_rooms` - List all rooms
+- `get_room` - Get detailed room information
 
-### For Chatbot Efficiency
+### Grouped Light Control
+- `list_grouped_lights` - List all grouped lights (rooms and zones)
+- `get_grouped_light` - Get detailed information about a grouped light
+- `control_room_lights` - Control all lights in a room/zone simultaneously:
+  - Single API call controls all lights with same settings
+  - On/off, brightness, RGB colors, color temperature, alerts
+  - Perfect for: "turn off all bedroom lights" or "set living room to warm white"
 
-**🔍 Discovery Queries**
+### Scene Management
+- `list_scenes` - List all scenes
+- `get_scene` - Get detailed scene information
+- `activate_scene` - Activate (recall) a scene:
+  - Optional brightness override (0-100%)
+  - Optional transition duration (0-6000000ms)
+  - Applies scene's lighting configuration to all lights
+
+### Cache Management
+- `warm_cache` - Manually populate/refresh cache for instant access
+- `cache_stats` - View cache statistics (hit rate, entries, SSE sync status)
+
+## Available Resources
+
+Resources provide read-only access to bridge data:
+
+- `bridges://status` - Status of all configured bridges
+- `bridges://devices` - Complete device inventory
+- `bridges://rooms` - All rooms across bridges
+- `bridges://scenes` - All scenes across bridges
+
+## Available Prompts
+
+Prompts provide AI-assisted interactions:
+
+- `smart-lighting` - Get lighting suggestions based on activity
+- `create-scene` - Interactive scene creation assistant
+- `energy-insights` - Energy usage analysis and optimization
+
+## Example Usage
+
+Once connected to Claude Desktop, you can interact with your lights naturally:
+
 ```
-❌ Avoid: "List all lights" (potentially large response)
-✅ Better: "Find lights that are on" (filtered, relevant)
-✅ Best: "Quick status" (minimal context summary)
-```
+You: Turn on the living room lights
+Claude: [Uses control_light tool to turn on lights]
 
-**🏠 Room Controls**  
-```
-❌ Avoid: Multiple individual light commands
-✅ Better: "Turn off all bedroom lights" (single room command)
-✅ Best: "Set bedroom to relaxing mood" (scene activation)
-```
+You: What lights are currently on?
+Claude: [Uses list_lights tool to check status]
 
-**📊 Status Checking**
-```
-❌ Avoid: Detailed system overview every time
-✅ Better: "Minimal status" (compact summary)
-✅ Best: Context-aware - detailed first time, minimal after
-```
+You: Set the bedroom lights to a warm sunset color at 30% brightness
+Claude: [Uses control_light with XY color coordinates]
 
-### Response Size Guidelines
+You: Make the office lights a rainbow of colors
+Claude: [Uses control_lights to set each light to different colors in one call]
 
-- **First interaction**: Use `standard` detail level for orientation
-- **Ongoing conversation**: Use `compact` to preserve context window
-- **Troubleshooting**: Use `verbose` for comprehensive information
-- **Quick checks**: Use `minimal` for status updates
-
-## 🛠️ Available Commands
-
-| Command | Description |
-|---------|-------------|
-| `npm run setup:web` | Launch interactive web setup wizard |
-| `npm run setup` | CLI setup tool |
-| `npm run dev` | Run in development mode with hot reload |
-| `npm run build` | Build for production |
-| `npm run start` | Run production build |
-| `npm run test` | Run unit tests |
-| `npm run test:connection` | Test connection to your Hue bridge |
-| `npm run typecheck` | Check TypeScript types |
-| `npm run lint` | Lint code |
-| `npm run format` | Format code with Prettier |
-
-## 🔧 MCP Tools
-
-The server provides these AI-optimized tools:
-
-### 🔍 Discovery & Search Tools
-| Tool | Description | Example |
-|------|-------------|---------|
-| `find_lights` | **Smart search with filters** | "Find all off lights", "Color bulbs in bedroom" |
-| `list_lights` | Enhanced listing with room context | "What lights do I have?" |
-| `get_light` | Detailed info with quick actions | "Show me the kitchen light status" |
-
-### 🏠 Room & Zone Management  
-| Tool | Description | Example |
-|------|-------------|---------|
-| `list_rooms` | List all rooms with states | "What rooms are available?" |
-| `control_room_lights` | Control entire rooms | "Turn off the bedroom" |
-| `list_zones` | List all zones with states | "What zones do I have?" |
-| `control_zone_lights` | Control entire zones | "Set Main Area to relaxing" |
-
-### 🎭 Scene Management
-| Tool | Description | Example |
-|------|-------------|---------|
-| `list_scenes` | Browse scenes with categories | "What scenes can I activate?" |
-| `activate_scene` | Activate predefined scenes | "Activate the relax scene" |
-
-### 🎛️ Individual Control & Overview
-| Tool | Description | Example |
-|------|-------------|---------|
-| `set_light_state` | Control with natural language | "Turn on the desk lamp to warm white" |
-| `get_summary` | System overview with insights | "Give me a lighting summary" |
-
-### 🔧 Bridge & System Management
-| Tool | Description | Example |
-|------|-------------|---------|
-| `get_bridge_config` | Bridge configuration and system info | "Show me bridge settings" |
-| `get_info` | Server version and system information | "What version am I running?" |
-
-### 👥 User Management
-| Tool | Description | Example |
-|------|-------------|---------|
-| `list_users` | List all whitelisted users | "Who has access to the bridge?" |
-| `get_user` | Detailed user information | "Show me details for user abc123" |
-
-### ✨ Enhanced Features
-
-All tools now include:
-- **🎯 Quick Actions** - Pre-built suggestions for common tasks
-- **💡 Smart Recommendations** - Energy tips and troubleshooting
-- **📊 Rich Context** - Room relationships and capability info
-- **🔍 Filtering & Search** - Find exactly what you need
-- **📈 Summary Statistics** - Overview data for better decisions
-
-### 💬 Chatbot UX Optimizations
-
-For sustained conversation efficiency:
-- **📏 Smart Response Sizing** - `compact`, `standard`, `verbose` modes
-- **🧠 Context Management** - Learns preferences, adapts over time
-- **📊 Intelligent Pagination** - Never overwhelms with too much data
-- **🎛️ Progressive Disclosure** - Start minimal, expand on request
-- **⚡ Conversation State** - Tracks usage for optimal tool selection
-
-## 🎨 Natural Language Examples
-
-### 🔍 Smart Search Queries
-- "Find all kitchen lights" → Searches by room name
-- "Show me lights that are on" → Filters by current state  
-- "Color bulbs in the bedroom" → Searches by capability and room
-- "All unreachable lights" → Finds connectivity issues
-
-### 💬 Conversation Efficiency Examples
-- "Quick status" → Uses minimal context for fast response
-- "What lights do I have?" (first time) → Standard detail level  
-- "What lights do I have?" (repeated) → Compact response
-- "Turn on bedroom lights" → Suggests room control over individual lights
-
-### 🎨 Colors & Moods  
-- "stormy dusk" → Deep blue-purple with low brightness
-- "warm white" → Comfortable warm temperature
-- "sunrise" → Orange-yellow with medium brightness
-- "ocean" → Blue-cyan colors
-- "fire" → Red-orange with high saturation
-
-### 🌟 Atmospheric Scenes (Auto-Variation)
-These keywords trigger realistic individual light variations:
-- "thunderstorm", "stormy" → Varied blues with different intensities
-- "sunset", "sunrise" → Gradient of warm colors across lights
-- "fireplace", "candlelight" → Flickering warm variations
-- "forest", "ocean" → Natural color variations
-- "cozy", "romantic" → Subtle warm variations
-
-### Brightness & Settings
-- "dim blue slowly" → Blue color with slow transition
-- "bright red" → Red at full brightness
-- "50% warm white" → Warm temperature at half brightness
-
-### Room & Zone Control
-- "Turn the living room to energizing mode"
-- "Set bedroom lights to candlelight"
-- "Make the office bright and cool"
-- "Set the Main Area zone to something relaxing for a sunday evening"
-- "Turn off all lights in the downstairs zone"
-
-## 🏗️ Architecture
-
-Built with modern technologies:
-
-- **TypeScript** - Type-safe development
-- **node-hue-api v5** - Official Hue SDK integration
-- **React + Vite** - Modern setup wizard
-- **Express** - Setup server backend
-- **Vitest** - Fast unit testing
-- **ESLint + Prettier** - Code quality
-
-### Key Design Principles
-
-- **Dual-mode operation** - Cached responses with direct API fallback
-- **Graceful degradation** - Always attempts to fulfill requests
-- **Rate limiting protection** - Prevents API abuse
-- **Comprehensive error handling** - Clear, actionable error messages
-
-## 🚀 Performance Optimizations
-
-### API Efficiency
-- **60-70% fewer API calls** through optimistic caching
-- **5x longer cache lifetime** (1min → 5min) with smart invalidation
-- **Bulk operations** preferred over individual light controls
-- **Rate limiting protection** with 2-minute discovery caching
-- **Parallel execution** for atmospheric variations (all lights updated simultaneously)
-
-### Chatbot Context Management  
-- **75% smaller responses** in compact mode
-- **Smart pagination** - max 5-20 results based on detail level
-- **Progressive disclosure** - minimal → standard → verbose
-- **Conversation state tracking** - learns and adapts over time
-- **Query optimization** - suggests more efficient alternatives
-
-### Memory & Context Window
-- **Adaptive response sizing** based on conversation stage
-- **Context-aware parameters** automatically optimized
-- **Intelligent truncation** with clear continuation hints
-- **Tool selection guidance** for optimal efficiency
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**"No bridges found"**
-- Ensure your Hue bridge is powered on and connected to the same network
-- Try manual IP entry in the setup wizard
-
-**"Authentication failed"**
-- Make sure to press the physical button on your Hue bridge
-- The button must be pressed within 30 seconds of starting authentication
-
-**"Connection test failed"**
-- Verify your bridge IP address is correct
-- Check that your API key is valid
-- Ensure your firewall allows connections to the bridge
-
-For more help, see our [Troubleshooting Guide](docs/troubleshooting.md).
-
-## 🧪 Testing Your Setup
-
-Test your configuration:
-
-```bash
-# Test connection to your bridge
-npm run test:connection
-
-# Run unit tests  
-npm test
-
-# Check TypeScript types
-npm run typecheck
+You: Create a relaxing scene for the bedroom
+Claude: [Uses create-scene prompt and tools to create scene]
 ```
 
-## 📄 Configuration
+## Cache Configuration
 
-The server supports multiple configuration methods:
+The cache layer provides:
 
-1. **Environment variables** (highest priority)
-2. **hue-config.json** file
-3. **.env** file (lowest priority)
+- **File Backend**: Persistent cache across restarts
+- **Auto-Save**: Automatic cache persistence every 30 seconds
+- **Warm on Startup**: Pre-loads cache for instant first access
+- **SSE Sync**: Real-time updates from bridge via Server-Sent Events
 
-### Configuration Options
+Cache files are stored in `~/.cache/hue-mcp/` by default.
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `HUE_BRIDGE_IP` | Bridge IP address | Required |
-| `HUE_API_KEY` | API authentication key | Required |
-| `HUE_SYNC_INTERVAL_MS` | Cache refresh interval | 300000 (5 min) |
-| `HUE_ENABLE_EVENTS` | Real-time event updates | false |
-| `LOG_LEVEL` | Logging verbosity | info |
+## Development
 
-## 🤝 Contributing
+### Project Structure
 
-We welcome contributions! Please see our [Development Guide](docs/development.md) for details.
-
-### Development Setup
-
-```bash
-# Clone and install
-git clone https://github.com/your-username/hue-mcp.git
-cd hue-mcp
-npm install
-
-# Run tests
-npm test
-
-# Start development server
-npm run dev
+```
+/tmp/hue-mcp/
+├── main.go                 # MCP server entry point
+├── go.mod                  # Go module dependencies
+├── pkg/
+│   ├── bridge/
+│   │   └── manager.go      # Bridge manager with cache integration
+│   ├── config/
+│   │   └── config.go       # Configuration management
+│   └── tools/
+│       ├── tools.go        # Tool registration
+│       ├── setup.go        # Bridge discovery and setup tools
+│       ├── bridges.go      # Bridge management tools
+│       ├── lights.go       # Single light control tools
+│       ├── lights_bulk.go  # Multi-light control tools
+│       ├── rooms.go        # Room management tools
+│       ├── scenes.go       # Scene management tools
+│       └── cache.go        # Cache management tools
 ```
 
-## 📈 Performance
+### Dependencies
 
-- **95% API call reduction** through intelligent caching
-- **Sub-second response times** for cached data
-- **Graceful fallbacks** when cache is unavailable
-- **Rate limiting protection** prevents bridge overload
+- `github.com/mark3labs/mcp-go` - MCP SDK for Go
+- `github.com/rmrfslashbin/hue-sdk` - Base Hue API SDK
+- `github.com/rmrfslashbin/hue-cache` - Caching layer with SSE sync
 
-## 🔒 Security
+## Troubleshooting
 
-- **Local network only** - No external API calls except bridge discovery
-- **No data collection** - All lighting data stays local
-- **Secure authentication** - API keys stored locally
-- **HTTPS communication** with Hue bridge
+### Bridge Connection Issues
 
-### 🛡️ User Management Security
+1. Verify bridge IP address is correct
+2. Ensure application key is valid
+3. Check network connectivity to bridge
+4. Review logs in `~/.config/hue-mcp/logs/`
 
-The server includes user management tools with built-in safety protections:
+### Cache Issues
 
-- **👀 Read-only access** - User tools provide visibility into bridge access without modification
-- **📝 Audit trail** - All user operations are logged with metadata  
-- **🔒 Local network only** - All user data stays on your local network
+1. Delete cache files: `rm -rf ~/.cache/hue-mcp/`
+2. Restart the MCP server
+3. Verify SSE endpoint is accessible
 
-**Note:** User deletion is not supported as Philips Hue deprecated this feature in their local API. To remove users, use the official [Philips Hue Account Management](https://account.meethue.com/apps) web interface.
+### Claude Desktop Not Detecting Server
 
-## 📝 License
+1. Verify server builds successfully: `go build -o hue-mcp main.go`
+2. Check configuration path in `claude_desktop_config.json`
+3. Restart Claude Desktop after configuration changes
+4. Check Claude Desktop developer console for errors
 
-MIT License - see [LICENSE](LICENSE) file for details.
+## License
 
-## 🙏 Acknowledgments
+[Add license information]
 
-- [Philips Hue](https://www.philips-hue.com/) for the amazing smart lighting platform
-- [node-hue-api](https://github.com/peter-murray/node-hue-api) for the excellent SDK
-- [Model Context Protocol](https://modelcontextprotocol.io/) for the AI integration framework
-- [Anthropic](https://anthropic.com/) for Claude and MCP development
+## Contributing
 
----
+[Add contribution guidelines]
 
-**Made with ❤️ for the smart home community**
+## Related Projects
 
-Need help? Check our [documentation](docs/) or open an issue!
+- [hue-sdk](https://github.com/rmrfslashbin/hue-sdk) - Base Philips Hue API SDK
+- [hue-cache](https://github.com/rmrfslashbin/hue-cache) - Caching layer with SSE synchronization
