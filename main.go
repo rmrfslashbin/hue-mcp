@@ -154,6 +154,83 @@ func registerResources(s *server.MCPServer, bm *bridge.Manager) {
 
 // registerPrompts registers all MCP prompts
 func registerPrompts(s *server.MCPServer) {
+	// Quickstart guide prompt
+	s.AddPrompt(
+		mcp.Prompt{
+			Name:        "quickstart",
+			Description: "Get started guide for setting up and using the Hue MCP server",
+		},
+		func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+			prompt := `Welcome to the Hue MCP Server! This server lets you control Philips Hue lighting through conversational AI.
+
+## First Time Setup
+
+If you haven't configured any bridges yet, follow these steps:
+
+1. **Discover your bridge**
+   Use the tool: discover_bridges
+   This will find Hue bridges on your network using the Philips discovery service.
+
+2. **Get the bridge IP address**
+   The discovery will return the bridge ID and IP address.
+
+3. **Authenticate with the bridge**
+   - Physically press the round link button on top of your Hue bridge
+   - Within 30 seconds, use the tool: authenticate_bridge
+   - Provide: bridge_ip, app_name (e.g., "claude-desktop"), device_name (e.g., "macbook-pro")
+   - You'll receive an app_key to save
+
+4. **Save the configuration**
+   Use the tool: add_bridge
+   Provide: bridge_id (e.g., "home"), bridge_name (e.g., "Home Bridge"), bridge_ip, and the app_key from step 3
+
+## Once Configured
+
+After setup, you can use these tools:
+
+**Bridge Management:**
+- list_bridges - See all configured bridges
+- get_bridge_info - Get detailed bridge information
+
+**Light Control:**
+- list_lights - See all your lights
+- get_light - Get details about a specific light
+- control_light - Turn lights on/off, adjust brightness, color temperature
+
+**Room Management:**
+- list_rooms - See all rooms
+- get_room - Get room details
+
+**Scene Management:**
+- list_scenes - See all scenes
+- get_scene - Get scene details
+
+**Setup Tools:**
+- get_config_path - See where configuration is stored
+- remove_bridge - Remove a bridge from configuration
+
+## Tips
+
+- Configuration is automatically saved to ~/.config/hue-mcp/config.json
+- The server supports multiple bridges - just repeat the setup process
+- Use natural language to control your lights - I'll handle the tool calls!
+
+Ready to get started? If you need to set up your first bridge, I'll guide you through the discovery and authentication process.`
+
+			return &mcp.GetPromptResult{
+				Messages: []mcp.PromptMessage{
+					{
+						Role: mcp.RoleUser,
+						Content: mcp.TextContent{
+							Type: "text",
+							Text: prompt,
+						},
+					},
+				},
+			}, nil
+		},
+	)
+
 	// Smart lighting suggestions prompt
 	s.AddPrompt(
 		mcp.Prompt{
