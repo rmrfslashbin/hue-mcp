@@ -126,9 +126,21 @@ Restart Claude Desktop to load the MCP server.
 - `list_rooms` - List all rooms
 - `get_room` - Get detailed room information
 
+### Grouped Light Control
+- `list_grouped_lights` - List all grouped lights (rooms and zones)
+- `get_grouped_light` - Get detailed information about a grouped light
+- `control_room_lights` - Control all lights in a room/zone simultaneously:
+  - Single API call controls all lights with same settings
+  - On/off, brightness, RGB colors, color temperature, alerts
+  - Perfect for: "turn off all bedroom lights" or "set living room to warm white"
+
 ### Scene Management
 - `list_scenes` - List all scenes
 - `get_scene` - Get detailed scene information
+- `activate_scene` - Activate (recall) a scene:
+  - Optional brightness override (0-100%)
+  - Optional transition duration (0-6000000ms)
+  - Applies scene's lighting configuration to all lights
 
 ### Cache Management
 - `warm_cache` - Manually populate/refresh cache for instant access
