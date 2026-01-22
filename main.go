@@ -27,10 +27,10 @@ func main() {
 	// Initialize bridge manager
 	bridgeManager := bridge.NewManager(cfg)
 
-	// Initialize all bridges
+	// Initialize all bridges (non-fatal if none configured)
 	ctx := context.Background()
 	if err := bridgeManager.InitializeBridges(ctx); err != nil {
-		log.Fatalf("Failed to initialize bridges: %v", err)
+		log.Printf("Warning: %v (server will start but tools will not work until bridges are configured)", err)
 	}
 
 	// Create MCP server
@@ -43,7 +43,7 @@ func main() {
 	)
 
 	// Register tools
-	tools.RegisterAllTools(mcpServer, bridgeManager)
+	tools.RegisterAllTools(mcpServer, bridgeManager, cfg)
 
 	// Register resources
 	registerResources(mcpServer, bridgeManager)
