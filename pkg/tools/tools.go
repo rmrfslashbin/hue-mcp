@@ -11,6 +11,9 @@ func RegisterAllTools(s *server.MCPServer, bm *bridge.Manager, cfg *config.Confi
 	// Setup tools - for discovering and configuring bridges
 	RegisterSetupTools(s, bm, cfg)
 
+	// Cache management tools
+	RegisterCacheTools(s, bm)
+
 	// Bridge control tools
 	RegisterLightTools(s, bm)
 	RegisterRoomTools(s, bm)
