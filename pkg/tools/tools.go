@@ -16,6 +16,7 @@ func RegisterAllTools(s *server.MCPServer, bm *bridge.Manager, cfg *config.Confi
 
 	// Bridge control tools
 	RegisterLightTools(s, bm)
+	RegisterBulkLightTools(s, bm)
 	RegisterRoomTools(s, bm)
 	RegisterSceneTools(s, bm)
 	RegisterBridgeTools(s, bm)
