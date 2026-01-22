@@ -96,6 +96,13 @@ Restart Claude Desktop to load the MCP server.
 
 ## Available Tools
 
+### Setup & Discovery
+- `discover_bridges` - Find Hue bridges on your network (N-UPnP via discovery.meethue.com)
+- `authenticate_bridge` - Authenticate with bridge (link button press required)
+- `add_bridge` - Add authenticated bridge to configuration
+- `remove_bridge` - Remove bridge from configuration
+- `get_config_path` - Get configuration file location
+
 ### Bridge Management
 - `list_bridges` - List all configured Hue bridges
 - `get_bridge_info` - Get detailed bridge information
@@ -103,7 +110,17 @@ Restart Claude Desktop to load the MCP server.
 ### Light Control
 - `list_lights` - List all lights across bridges
 - `get_light` - Get detailed light information
-- `control_light` - Control light state (on/off, brightness, color temp)
+- `control_light` - Comprehensive single light control:
+  - On/off, brightness (0-100%)
+  - RGB colors via XY coordinates
+  - Color temperature (white spectrum, 153-500 mirek)
+  - Effects (candle, fire, prism, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant)
+  - Timed effects (sunrise, sunset with duration)
+  - Alert effects (breathe)
+  - Gradient support for lightstrips
+- `control_lights` - Control multiple lights in one call:
+  - Each light can have unique color, brightness, and effects
+  - Perfect for: "set room to rainbow" or "varying shades of blue"
 
 ### Room Management
 - `list_rooms` - List all rooms
@@ -112,6 +129,10 @@ Restart Claude Desktop to load the MCP server.
 ### Scene Management
 - `list_scenes` - List all scenes
 - `get_scene` - Get detailed scene information
+
+### Cache Management
+- `warm_cache` - Manually populate/refresh cache for instant access
+- `cache_stats` - View cache statistics (hit rate, entries, SSE sync status)
 
 ## Available Resources
 
@@ -140,6 +161,12 @@ Claude: [Uses control_light tool to turn on lights]
 
 You: What lights are currently on?
 Claude: [Uses list_lights tool to check status]
+
+You: Set the bedroom lights to a warm sunset color at 30% brightness
+Claude: [Uses control_light with XY color coordinates]
+
+You: Make the office lights a rainbow of colors
+Claude: [Uses control_lights to set each light to different colors in one call]
 
 You: Create a relaxing scene for the bedroom
 Claude: [Uses create-scene prompt and tools to create scene]
@@ -171,10 +198,13 @@ Cache files are stored in `~/.cache/hue-mcp/` by default.
 │   │   └── config.go       # Configuration management
 │   └── tools/
 │       ├── tools.go        # Tool registration
+│       ├── setup.go        # Bridge discovery and setup tools
 │       ├── bridges.go      # Bridge management tools
-│       ├── lights.go       # Light control tools
+│       ├── lights.go       # Single light control tools
+│       ├── lights_bulk.go  # Multi-light control tools
 │       ├── rooms.go        # Room management tools
-│       └── scenes.go       # Scene management tools
+│       ├── scenes.go       # Scene management tools
+│       └── cache.go        # Cache management tools
 ```
 
 ### Dependencies

@@ -195,7 +195,8 @@ After setup, you can use these tools:
 **Light Control:**
 - list_lights - See all your lights
 - get_light - Get details about a specific light
-- control_light - Turn lights on/off, adjust brightness, color temperature
+- control_light - Full control of a single light (on/off, brightness, RGB colors, effects, gradients)
+- control_lights - Control multiple lights at once, each with unique settings (perfect for "set room to varying colors")
 
 **Room Management:**
 - list_rooms - See all rooms
