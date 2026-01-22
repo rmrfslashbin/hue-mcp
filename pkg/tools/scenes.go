@@ -8,6 +8,7 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/rmrfslashbin/hue-mcp/pkg/bridge"
+	"github.com/rmrfslashbin/hue-sdk/resources"
 )
 
 // RegisterSceneTools registers all scene-related tools
@@ -130,6 +131,91 @@ func RegisterSceneTools(s *server.MCPServer, bm *bridge.Manager) {
 			}
 
 			return mcp.NewToolResultText(string(data)), nil
+		},
+	)
+
+	// activate_scene tool
+	s.AddTool(
+		mcp.Tool{
+			Name:        "activate_scene",
+			Description: "Activate (recall) a scene to apply its lighting configuration. Optionally override brightness or transition duration.",
+			InputSchema: mcp.ToolInputSchema{
+				Type: "object",
+				Properties: map[string]interface{}{
+					"scene_id": map[string]interface{}{
+						"type":        "string",
+						"description": "The scene ID to activate",
+					},
+					"bridge_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Optional bridge ID. Uses default bridge if not provided",
+					},
+					"duration": map[string]interface{}{
+						"type":        "number",
+						"description": "Optional transition duration in milliseconds (0-6000000, default is scene's configured duration)",
+						"minimum":     0,
+						"maximum":     6000000,
+					},
+					"brightness": map[string]interface{}{
+						"type":        "number",
+						"description": "Optional brightness override for all lights in the scene (0-100)",
+						"minimum":     0,
+						"maximum":     100,
+					},
+				},
+				Required: []string{"scene_id"},
+			},
+		},
+		func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+			sceneID, err := request.RequireString("scene_id")
+			if err != nil {
+				return mcp.NewToolResultError("scene_id is required"), nil
+			}
+
+			bridgeID := request.GetString("bridge_id", "")
+			var br *bridge.Bridge
+
+			if bridgeID != "" {
+				br, err = bm.GetBridge(bridgeID)
+			} else {
+				br, err = bm.GetDefaultBridge()
+			}
+			if err != nil {
+				return mcp.NewToolResultError(err.Error()), nil
+			}
+
+			// Build scene recall request
+			recall := resources.SceneRecall{
+				Action: "active",
+			}
+
+			args := request.GetArguments()
+
+			// Optional duration override
+			if durationVal, ok := args["duration"]; ok {
+				if duration, ok := durationVal.(float64); ok {
+					durationMs := int(duration)
+					recall.Duration = &durationMs
+				}
+			}
+
+			// Optional brightness override
+			if brightnessVal, ok := args["brightness"]; ok {
+				if brightness, ok := brightnessVal.(float64); ok {
+					recall.Dimming = &resources.Dimming{Brightness: brightness}
+				}
+			}
+
+			// Create scene update with recall
+			update := resources.SceneUpdate{
+				Recall: &recall,
+			}
+
+			if err := br.CachedClient.Scenes().Update(ctx, sceneID, update); err != nil {
+				return mcp.NewToolResultError(fmt.Sprintf("Failed to activate scene: %v", err)), nil
+			}
+
+			return mcp.NewToolResultText(fmt.Sprintf("✅ Scene %s activated successfully", sceneID)), nil
 		},
 	)
 }
